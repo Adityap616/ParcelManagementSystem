@@ -2,9 +2,17 @@ package travel.management.system;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 
-public class Signup extends JFrame {
+public class Signup extends JFrame implements ActionListener {
+    JButton create,back;
+    JTextField tfusername,tfname,tfanswer;
+    JPasswordField tfpassword;
+    Choice security;
     Signup(){
         // setBounds is the combination of both setSize and setLocation
         //setSize(900,400);
@@ -24,7 +32,7 @@ public class Signup extends JFrame {
         username.setFont(new Font("Tamoha",Font.BOLD,14));
         p1.add(username);
 
-        JTextField tfusername = new JTextField();
+        tfusername = new JTextField();
         tfusername.setBounds(190,20,180,25);
         tfusername.setBorder(BorderFactory.createEmptyBorder());
         p1.add(tfusername);
@@ -34,7 +42,7 @@ public class Signup extends JFrame {
         name.setFont(new Font("Tamoha",Font.BOLD,14));
         p1.add(name);
 
-        JTextField tfname = new JTextField();
+        tfname = new JTextField();
         tfname.setBounds(190,60,180,25);
         tfname.setBorder(BorderFactory.createEmptyBorder());
         p1.add(tfname);
@@ -44,7 +52,7 @@ public class Signup extends JFrame {
         password.setFont(new Font("Tamoha",Font.BOLD,14));
         p1.add(password);
 
-        JTextField tfpassword = new JTextField();
+        tfpassword = new JPasswordField();
         tfpassword.setBounds(190,100,180,25);
         tfpassword.setBorder(BorderFactory.createEmptyBorder());
         p1.add(tfpassword);
@@ -54,7 +62,7 @@ public class Signup extends JFrame {
         securityQtn.setFont(new Font("Tamoha",Font.BOLD,14));
         p1.add(securityQtn);
 
-        Choice security = new Choice();//gives a dropdown of various options to choose from
+        security = new Choice();//gives a dropdown of various options to choose from
         security.add("Place of Birth");
         security.add("Favourite sport");
         security.add("Father's name");
@@ -67,19 +75,21 @@ public class Signup extends JFrame {
         answer.setFont(new Font("Tamoha",Font.BOLD,14));
         p1.add(answer);
 
-        JTextField tfanswer = new JTextField();
+        tfanswer = new JTextField();
         tfanswer.setBounds(190,180,180,25);
         tfanswer.setBorder(BorderFactory.createEmptyBorder());
         p1.add(tfanswer);
 
-        JButton create = new JButton("Create");
+        create = new JButton("Create");
+        create.addActionListener(this);
         create.setBackground(Color.WHITE);
         create.setForeground(new Color(133,193,233));
         create.setBounds(80,250,100,30);
         create.setFont(new Font("Tamoha",Font.BOLD,14));
         p1.add(create);
 
-        JButton back = new JButton("Back");
+        back = new JButton("Back");
+        back.addActionListener(this);
         back.setBackground(Color.WHITE);
         back.setForeground(new Color(133,193,233));
         back.setBounds(250,250,100,30);
@@ -96,6 +106,35 @@ public class Signup extends JFrame {
 
 
         setVisible(true); //should always be placed at the end
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == create) {
+            String username = tfusername.getText();
+            String name = tfname.getText();
+//            String password = tfpassword.getPassword();
+            String password = new String(tfpassword.getPassword());
+            String question = security.getSelectedItem();
+            String answer = tfanswer.getText();
+
+            String query = "insert into details values('" + username + "','" + name + "','" + password + "','" + question + "','" + answer + "')";
+            try {
+
+                Conn c = new Conn();
+                c.s.executeUpdate(query);
+
+                JOptionPane.showMessageDialog(null, "Account Created Successfully");
+                setVisible(false);
+                new Login();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Error creating account");
+                e.printStackTrace();
+            }
+        } else if (ae.getSource() == back) {
+            setVisible(false);
+            new Login();
+        }
     }
     public static void main(String[] args) {
         new Signup();

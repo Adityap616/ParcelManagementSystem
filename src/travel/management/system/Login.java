@@ -2,9 +2,15 @@ package travel.management.system;
 
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.border.*; //border is a subpackage so it is not imported in line 3
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import javax.swing.border.*; //border is a subpackage ,so it is not imported in line 3
 
-public class Login extends JFrame {
+public class Login extends JFrame implements ActionListener {
+    JButton login,signup,forget;
+    JTextField tfusername;
+    JPasswordField tfpassword;
     Login(){
         setSize(900,400);
         setLocation(350,200);
@@ -35,7 +41,7 @@ public class Login extends JFrame {
         username.setFont(new Font("SAN SERIF",Font.PLAIN,18));
         p2.add(username);
 
-        JTextField tfusername = new JTextField();
+        tfusername = new JTextField();
         tfusername.setBounds(60,60,300,30);
         tfusername.setBorder(BorderFactory.createEmptyBorder());
         p2.add(tfusername);
@@ -45,30 +51,33 @@ public class Login extends JFrame {
         password.setFont(new Font("SAN SERIF",Font.PLAIN,18));
         p2.add(password);
 
-        JTextField tfpassword = new JTextField();
+        tfpassword = new JPasswordField();
         tfpassword.setBounds(60,150,300,30);
         tfpassword.setBorder(BorderFactory.createEmptyBorder());
         p2.add(tfpassword);
 
-        JButton login = new JButton("Login");
+        login = new JButton("Login");
         login.setBounds(60,200,130,30);
         login.setBackground(new Color(133,193,233));
         login.setForeground(Color.WHITE);
         login.setBorder(new LineBorder(new Color(133,193,233)));
+        login.addActionListener(this);
         p2.add(login);
 
-        JButton signup = new JButton("Signup");
+        signup = new JButton("Signup");
         signup.setBounds(230,200,130,30);
         signup.setBackground(new Color(133,193,233));
         signup.setForeground(Color.WHITE);
         signup.setBorder(new LineBorder(new Color(133,193,233)));
+        signup.addActionListener(this);
         p2.add(signup);
 
-        JButton forget = new JButton("Forget Password");
+        forget = new JButton("Forget Password");
         forget.setBounds(130,250,130,30);
         forget.setBackground(new Color(133,193,233));
         forget.setForeground(Color.WHITE);
         forget.setBorder(new LineBorder(new Color(133,193,233)));
+        forget.addActionListener(this);
         p2.add(forget);
 
         JLabel text = new JLabel("Trouble in Login...");
@@ -78,7 +87,38 @@ public class Login extends JFrame {
 
         setVisible(true);
     }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == login){
+            try {
+                String username = tfusername.getText();
+                String password = new String(tfpassword.getPassword());
+
+                String query = "Select * from details where username = '"+username+"' AND password = '"+password+"'";
+                Conn c = new Conn();
+                ResultSet rs = c.s.executeQuery(query);
+                if (rs.next()){
+                    setVisible(false);
+                    new Loading(username);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Incorrect username or password");
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        } else if (ae.getSource() == signup) {
+            setVisible(false);
+            new Signup();
+        } else if (ae.getSource() == forget) {
+            setVisible(false);
+            new ForgetPassword();
+        }
+    }
+
     public static void main(String[] args) {
+
         new Login();
     }
 }
